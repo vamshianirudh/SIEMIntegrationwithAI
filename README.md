@@ -1,1 +1,1 @@
-# SIEMIntegrationwithAI
+# SIEM Integration with Artifical Intelligence(ChatGPT)
