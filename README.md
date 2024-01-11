@@ -40,41 +40,90 @@ Once you have create a workspace, add the created workspace to the Sentinel by c
 <img src="https://imgur.com/HuCDADc.png" height="80%" width="80%" alt="Windows Azure Home"/>
 <br />
 
-Now we have to configure the virtual machine. Create a new resource group and name it something easy to remember. Choose the operating system as Debian since the honeypot requires it and remember that the region you choose will affect the cost of the machine you are deploying.
+Sentinel playbooks provides couple of options for us to choose, each providing an advantage. But for our purposes, we will be selecting "Playbook with Incident Trigger". This option will trigger automation when the incident is created. 
 
 <p align="center">
 <br/>
-<img src="https://imgur.com/mRtqNqt.png" height="80%" width="80%" alt="Windows Azure Home"/>
+<img src="https://imgur.com/Bmxlz8N.png" height="80%" width="80%" alt="Windows Azure Home"/>
 <br />
 
-There is an option called "Run with Azure Spot Discount" which you can choose. With this you can save on overall virtual instance cost but remember that with this option selected, Azure at any point can delete your machine. Since we don't wanna be interrupted with our installation process, we will keep this option disabled.
-
-For VM size, choose the Standard_D4s_v3 as other sizes within the free credit range tend to be slow.
+Here, we have to specify the name of the playbook and we can also enable diagnostic logs. Diagnostic logs will allow us to track any failures with the playbook.
 
 <p align="center">
 <br/>
-<img src="https://imgur.com/AJyo1bb.png" height="80%" width="80%" alt=""/>
+<img src="https://imgur.com/bCRyTer.png" height="80%" width="80%" alt="Windows Azure Home"/>
 <br />
 
-To authenticate with your virtual machine, we can either choose password or SSH public key. We will be using password for our case. Make sure you save the password as we will be using it in the future.
+Now in the Connection section, you will see a connection with managed identity to Sentinel. Sentinel will automatically create a managed identity for the playbook as a way to authenticate. This eliminates the need to store any explicit credentials or secrets in the playbook or manage them separately. We can click on "Review and create" to create our playbook. 
 
-In the inbound port section, make sure that the SSH is selected as we will be using it later to connect to our virtual machine. Now click on "Next:Disks >" to continue creating the disk size.
+After creating the playbook, you will be redirected to Logic app designer window. Logic app and playbooks are basically synonyms. We call them playbooks in Microsoft Sentinel and they provide users with a graphical user interface to visualize and build workflows with different services and applications. The designer is structured from a different building blocks, each representing a specific action or connector that you can use to build your workflow. These building blocks include triggers, actions and conditions.
+
+Let's move on and start working on our playbook. We will start by selecting a "New step" and there in the search bar, search for GPT and choose the "GPT3 Completes your Prompt". Don't forget to name your connection.
 
 <p align="center">
 <br/>
-<img src="https://imgur.com/xzib8rB.png" height="80%" width="80%" alt=""/>
+<img src="https://imgur.com/QPOCBRu.png" height="80%" width="80%" alt="Windows Azure Home"/>
 <br />
 
-We will need to create at least 128 gigabyte disks, to do so, you will to have select "Create and attack a new disk" > "Change size" and select the 128GB disk option.
+<br/>
+<img src="https://imgur.com/VKZv3Hc.png" height="80%" width="80%" alt="Windows Azure Home"/>
+<br />
+
+After this we will have to provide an API key. API key needs to start with bearer followed by space and your unique API key. We can get our API key from the official OpenAI website and you can visit the website by clicking on the link below.
+
+#### [OpenAI Website](https://platform.openai.com/api-keys)
+
+Now to create the API-key, click on "Create new secret key" and provide a name and a key will presented to you
+
+<h4>Note:</h4>
+
+Once you leave the website after generating the key, you won't be able to retrieve your API key again. So make sure you store it somewhere securely. 
+
+Moving back to Azure, let's create the string that we're supposed to enter in the API-key section. Here's the format that you're supposed to enter in:
+
+```javascript
+Bearer [your api key]
+```
 
 <p align="center">
 <br/>
-<img src="https://imgur.com/4hnohY2.png" height="80%" width="80%" alt=""/>
+<img src="https://imgur.com/42EFius.png" height="80%" width="80%" alt=""/>
+<br />
+
+Confirm with clicking on "Create" and you will be presented with options for your connection. For now, let's change the most important field which is "Prompt". We will be providing a question/prompt for ChatGPT, which can include questions like "How can I remediate" and here after we can put some dynamic content. Dynamic content refers to data that is generated or retrieved at runtime based on the context of the workflow. In this case, we will use our Sentinel incident building block.
+
+As we can see, we are provided with mutliple options that can be used. For example, entities which could be a unique name, IP address, host and many more. And for our case, we are interested in "Incident title" followed by the "Incident description". Incident description is our final prompt. How can I remediate specific incident title will be put in here with a description of the incident description.
+
+<p align="center">
+<br/>
+<img src="https://imgur.com/60VkQqV.png" height="80%" width="80%" alt=""/>
+<br />
+
+Finally, we want to put the response from the ChatGPT inside our Sentinel incident. Add another step and search for Add comment to incident
+
+<p align="center">
+<br/>
+<img src="https://imgur.com/YBkZDOo.png" height="80%" width="80%" alt=""/>
+<br />
+
+Now we have to specify unique incident ID. We can find this in the dynamic context section. Just search for "incident ARM ID" and select the presented block. 
+
+<p align="center">
+<br/>
+<img src="https://imgur.com/gnlYAy7.png" height="80%" width="80%" alt=""/>
+<br />
+
+Lastly, we will provide an incident comment message, which will be the output from the ChatGPT. Going back to the dynamic content in the GPT3 completes your prompt section, click on "See more" and from there select "Text". Once you click on it, a new building block will be created. That's because of the parameter that we have selected. This enables you to perform action for each individual item in a set of values based on the output parameters you have selected. This is how we have created our first playbook. Make sure you save it by click on "Save" option on the top. 
+
+<p align="center">
+<br/>
+<img src="https://imgur.com/bJtCffc.png" height="80%" width="80%" alt=""/>
 <br />
 
 <br/>
-<img src="https://imgur.com/SfaOwJ1.png" height="80%" width="80%" alt=""/>
+<img src="https://imgur.com/P6UlSxw.png" height="80%" width="80%" alt=""/>
 <br />
+
 
 Now we can move to the networking section. Click on "Next: Networking >" You will notice that a new virtual network subnet and public address has been created. No need to make any changes in networking section. Click on "Next: Management >". Here we have a very important functionality, which is to enable auto shutdown. This option will automatically daily stop your VM to save some cost. Since will be working on this virtual instance only for a short while, we will be not selecting this option.
 
