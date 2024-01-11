@@ -155,7 +155,7 @@ Now, go to "Members" section and choose "Managed identity" option. Now click on 
 
 <h3>Running ChatGPT on Cybersecurity Incidents</h3>
 
-
+Now that we have assigned all the necessary permissions to the Sentinel, we can finally run our playbook on an actual incident. Navigate to "Incidents" tab and select the incident that you want to run the playbook on. If you aren't seeing any incidents on your tab, just change the timeframe to "Last 30 days" that should do the trick.
 
 <p align="center">
 <br/>
