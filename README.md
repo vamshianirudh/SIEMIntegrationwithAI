@@ -124,17 +124,38 @@ Lastly, we will provide an incident comment message, which will be the output fr
 <img src="https://imgur.com/P6UlSxw.png" height="80%" width="80%" alt=""/>
 <br />
 
+<h3>Assigning Permissions to ChatGPT</h3>
 
-Now we can move to the networking section. Click on "Next: Networking >" You will notice that a new virtual network subnet and public address has been created. No need to make any changes in networking section. Click on "Next: Management >". Here we have a very important functionality, which is to enable auto shutdown. This option will automatically daily stop your VM to save some cost. Since will be working on this virtual instance only for a short while, we will be not selecting this option.
+Now that our playbook is created, we need to assign appropriate privileges. If you want to use a playbook to write commands in Microsoft Sentinel, we will need to assign the Microsoft Sentinel responder role to that playbook. By assigning Sentinel Responder role to that playbook, we are allowing it to perform certain actions within Sentinel. This includes, creating and updating incidents, adding comments and running automation workflows. This ensures that your incident response process is streamlined and efficient while also maintaining security and compliance based on least privilege.
 
-<h3>Note</h3>
-It's also important to decide how long you want to keep your VM. As you will be charged for stopped VM because you have a public IP address associated with it. When we are done working on this project and don't have free credits, make sure to delete all the resources to avoid any extra charges.
+To assign Microsoft Sentinel responder role to a playbook, you need to navigate to the resource group where you have deployed the Sentinel solution. Once you are in the resouce group, click on "Access management(IAM)" option. Click on "Add" and select "Add role assignment".
 
-After making all the necessary changes, click on "Review + create" option at the bottom and click on "Create" to confirm and create your Azure virtual machine. The final step we need to do is to download the private key. This private key will be required later to connect to the VM and configure the honeypot.
+<p align="center">
+<br/>
+<img src="https://imgur.com/INB5T20.png" height="80%" width="80%" alt=""/>
+<br />
 
-<h3>Installation and Configuration of HoneyPot</h3>
+<br/>
+<img src="https://imgur.com/hPcMe4t.png" height="80%" width="80%" alt=""/>
+<br />
 
-We will have to open a few ports, but to make it even more simple, we will be opening all ports which allows all the incoming and outgoing connection to these ports. Follow these steps to configure the ports:
+In the "Add role assignment" window search for Microsoft Sentinel and select Microsoft Sentinel Responder.
+
+<p align="center>
+<br/>
+<img src="https://imgur.com/1Im6IpR.png" height="80%" width="80%" alt=""/>
+<br />
+
+Now, go to "Members" section and choose "Managed identity" option. Now click on "Select members" option and choose the "Logic app" option in Managed identity and select the playbook that we have created. After that, we can finally review and create to assign the Microsoft Sentinel Responder to our playbook.
+
+<p align="center>
+<br/>
+<img src="https://imgur.com/8uuwNI0.png" height="80%" width="80%" alt=""/>
+<br />
+
+<h3>Running ChatGPT on Cybersecurity Incidents</h3>
+
+
 
 <p align="center">
 <br/>
